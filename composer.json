@@ -1,0 +1,15 @@
+{
+    "name": "waxframework/request-validator",
+    "autoload": {
+        "psr-4": {
+            "WaxFramework\\RequestValidator\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "MD AL AMIN",
+            "email": "mdalaminbey@gmail.com"
+        }
+    ],
+    "require": {}
+}
