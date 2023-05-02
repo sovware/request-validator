@@ -301,6 +301,20 @@ class Validator {
         $this->errors[$input_name][] = $message;
     }
 
+    public function confirmed_validator( string $input_name ) {
+        $value1 = $this->wp_rest_request->get_param( $input_name );
+        $value2 = $this->wp_rest_request->get_param( "{$input_name}_confirmation" );
+    
+        if ( $value1 === $value2 ) {
+            return;
+        }
+
+        $message = $this->get_message( 'confirmed' );
+        $message = (string) str_replace( ':attribute', $input_name, $message );
+
+        $this->errors[$input_name][] = $message;
+    }
+
     protected function mimes_validator( string $input_name, string $mimes ) {
         $files = $this->wp_rest_request->get_file_params();
         
