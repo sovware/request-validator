@@ -11,9 +11,9 @@ class Validator {
 
     protected array $explode_rules;
 
-    protected array $errors = [];
+    public array $errors = [];
 
-    protected array $rules = [
+    protected array $available_rules = [
         'required',
         'email',
         'max',
@@ -21,9 +21,17 @@ class Validator {
         'string',
         'integer',
         'numeric',
-        'mimes'
+        'uuid',
+        'url',
+        'file',
+        'mimes', // file types
+        'array',
+        'boolean',
+        'mac_address',
     ];
 
+    use DateTime;
+    
     public function __construct( WP_REST_Request $wp_rest_request, Mime $mime ) {
         $this->wp_rest_request = $wp_rest_request;
         $this->mime            = $mime;
@@ -41,8 +49,12 @@ class Validator {
         return $this->errors;
     }
 
+    public function is_fail() {
+        return ! empty( $this->errors );
+    }
+
     protected function validate_rule( string $input_name, string $rule ) {
-        $rule_explode = explode( ':', $rule );
+        $rule_explode = explode( ':', $rule, 2 );
         $method       = "{$rule_explode[0]}_validator";
         if ( method_exists( static::class, $method ) ) {
             static::$method( $input_name, isset( $rule_explode[1] ) ? $rule_explode[1] : null );
