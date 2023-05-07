@@ -288,6 +288,36 @@ class Validator {
         $this->set_error( $input_name, 'mimes', [':attribute', ':values'], [$input_name, $mimes] );
     }
 
+    protected function json_validator(string $input_name) {
+        if ( ! $this->wp_rest_request->has_param( $input_name ) ) {
+            return;
+        }
+
+        $value = $this->wp_rest_request->get_param( $input_name );
+        json_decode($value);
+
+        if(json_last_error() === JSON_ERROR_NONE) {
+            return;
+        }
+
+        $this->set_error( $input_name, 'json', [':attribute'], [$input_name] );
+    }
+
+    protected function accepted_validator( string $input_name, string $items ) {
+        if ( ! $this->wp_rest_request->has_param( $input_name ) ) {
+            return;
+        }
+
+        $value      = $this->wp_rest_request->get_param( $input_name );
+        $item_array = explode( ',', $items );
+
+        if ( in_array( $value, $item_array ) ) {
+            return;
+        }
+
+        $this->set_error( $input_name, 'accepted', [':attribute', ':value'], [$input_name, $items] );
+    }
+
     private function set_error( string $input_name, string $rule, array $keys, array $values ) {
         $message = $this->get_message( $rule );
         $message = (string) str_replace( $keys, $values, $message );
@@ -322,7 +352,7 @@ class Validator {
             |
             */
         
-            'accepted'             => 'The :attribute must be accepted.',
+            'accepted'             => 'The :attribute must be one of :value.',
             'accepted_if'          => 'The :attribute must be accepted when :other is :value.',
             'active_url'           => 'The :attribute is not a valid URL.',
             'after'                => 'The :attribute must be a date after :date.',
