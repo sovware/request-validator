@@ -288,16 +288,18 @@ class Validator {
         $this->set_error( $input_name, 'mimes', [':attribute', ':values'], [$input_name, $mimes] );
     }
 
-    protected function json_validator(string $input_name) {
+    protected function json_validator( string $input_name ) {
         if ( ! $this->wp_rest_request->has_param( $input_name ) ) {
             return;
         }
 
         $value = $this->wp_rest_request->get_param( $input_name );
-        json_decode($value);
-
-        if(json_last_error() === JSON_ERROR_NONE) {
-            return;
+        
+        if ( is_string( $value ) ) {
+            json_decode( $value );
+            if ( json_last_error() === JSON_ERROR_NONE ) {
+                return;
+            }
         }
 
         $this->set_error( $input_name, 'json', [':attribute'], [$input_name] );
