@@ -94,9 +94,10 @@ class Validator {
     
     protected function max_validator( string $input_name, int $max ) {
 
-        $value = $this->wp_rest_request->get_param( $input_name );
+        if ( $this->wp_rest_request->has_param( $input_name ) ) {
 
-        if ( ! is_null( $value ) ) {
+            $value = $this->wp_rest_request->get_param( $input_name );
+
             if ( in_array( 'numeric', $this->explode_rules ) || in_array( 'integer', $this->explode_rules ) ) {
                 $value = intval( $value );
 
@@ -136,9 +137,11 @@ class Validator {
     }
 
     protected function min_validator( string $input_name, int $min ) {
-        $value = $this->wp_rest_request->get_param( $input_name );
+        
+        if ( $this->wp_rest_request->has_param( $input_name ) ) {
 
-        if ( ! is_null( $value ) ) {
+            $value = $this->wp_rest_request->get_param( $input_name );
+
             if ( in_array( 'numeric', $this->explode_rules ) || in_array( 'integer', $this->explode_rules ) ) {
                 $value = intval( $value );
 
@@ -178,9 +181,7 @@ class Validator {
     }
 
     protected function boolean_validator( string $input_name ) {
-        $value = $this->wp_rest_request->get_param( $input_name );
-
-        if ( is_null( $value ) || is_bool( $value ) ) {
+        if ( ! $this->wp_rest_request->has_param( $input_name ) || is_bool( $this->wp_rest_request->get_param( $input_name ) ) ) {
             return;
         }
 
@@ -188,9 +189,7 @@ class Validator {
     }
 
     protected function uuid_validator( string $input_name ) {
-        $value = $this->wp_rest_request->get_param( $input_name );
-
-        if ( is_null( $value ) || wp_is_uuid( $value ) ) {
+        if ( ! $this->wp_rest_request->has_param( $input_name ) || wp_is_uuid( $this->wp_rest_request->get_param( $input_name ) ) ) {
             return;
         }
 
@@ -198,19 +197,21 @@ class Validator {
     }
 
     protected function url_validator( string $input_name ) {
-        $value = $this->wp_rest_request->get_param( $input_name );
-
-        if ( is_null( $value ) || filter_var( $value, FILTER_VALIDATE_URL ) ) {
+        if ( ! $this->wp_rest_request->has_param( $input_name ) || filter_var( $this->wp_rest_request->get_param( $input_name ), FILTER_VALIDATE_URL ) ) {
             return;
         }
 
         $this->set_error( $input_name, 'url', [':attribute'], [$input_name] );
     }
 
-    protected function mac_address_validator( string $input_name ) {
+    protected function mac_address_validator( string $input_name ) {        
+        if ( ! $this->wp_rest_request->has_param( $input_name ) ) {
+            return;
+        }
+
         $value = $this->wp_rest_request->get_param( $input_name );
 
-        if ( is_null( $value ) || ( is_string( $value ) && preg_match( '/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $value ) ) ) {
+        if ( is_string( $value ) && preg_match( '/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $value ) ) {
             return;
         }
 
@@ -218,9 +219,13 @@ class Validator {
     }
 
     protected function email_validator( string $input_name ) {
+        if ( ! $this->wp_rest_request->has_param( $input_name ) ) {
+            return;
+        }
+
         $value = $this->wp_rest_request->get_param( $input_name );
 
-        if ( is_null( $value ) || ( is_string( $value ) && is_email( $value ) ) ) {
+        if ( is_string( $value ) && is_email( $value ) ) {
             return;
         }
 
@@ -228,9 +233,7 @@ class Validator {
     }
 
     protected function array_validator( string $input_name ) {
-        $value = $this->wp_rest_request->get_param( $input_name );
-
-        if ( is_null( $value ) || is_array( $value ) ) {
+        if ( ! $this->wp_rest_request->has_param( $input_name ) || is_array( $this->wp_rest_request->get_param( $input_name ) ) ) {
             return;
         }
 
@@ -238,9 +241,7 @@ class Validator {
     }
 
     protected function numeric_validator( string $input_name ) {
-        $value = $this->wp_rest_request->get_param( $input_name );
-
-        if ( is_null( $value ) || is_numeric( $value ) ) {
+        if ( ! $this->wp_rest_request->has_param( $input_name ) || is_numeric( $this->wp_rest_request->get_param( $input_name ) ) ) {
             return;
         }
 
@@ -248,9 +249,7 @@ class Validator {
     }
 
     protected function integer_validator( string $input_name ) {
-        $value = $this->wp_rest_request->get_param( $input_name );
-
-        if ( is_null( $value ) || is_int( $value ) ) {
+        if ( ! $this->wp_rest_request->has_param( $input_name ) || is_int( $this->wp_rest_request->get_param( $input_name ) ) ) {
             return;
         }
 
